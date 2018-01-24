@@ -3,7 +3,7 @@ object Servidor: TServidor
   Top = 0
   Caption = 'Servidor'
   ClientHeight = 194
-  ClientWidth = 829
+  ClientWidth = 633
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -40,8 +40,8 @@ object Servidor: TServidor
     ParentFont = False
   end
   object lblStatusServidor: TLabel
-    Left = 497
-    Top = 77
+    Left = 440
+    Top = 84
     Width = 156
     Height = 24
     Caption = 'Servidor Iniciado!'
@@ -53,8 +53,8 @@ object Servidor: TServidor
     ParentFont = False
   end
   object lblServerPort: TLabel
-    Left = 497
-    Top = 35
+    Left = 300
+    Top = 33
     Width = 121
     Height = 23
     Caption = 'SERVERPORT:'
@@ -80,21 +80,21 @@ object Servidor: TServidor
   end
   object edtHost: TEdit
     Left = 151
-    Top = 33
+    Top = 38
     Width = 120
     Height = 21
     TabOrder = 0
   end
   object edtPort: TEdit
     Left = 151
-    Top = 83
+    Top = 86
     Width = 120
     Height = 21
     TabOrder = 1
   end
   object Edit1: TEdit
-    Left = 624
-    Top = 33
+    Left = 427
+    Top = 38
     Width = 181
     Height = 21
     TabOrder = 2

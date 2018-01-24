@@ -6,7 +6,10 @@ uses
   IdHTTPWebBrokerBridge,
   uFrmServidor in 'uFrmServidor.pas' {Servidor},
   uSC in 'uSC.pas' {SC: TDataModule},
-  uSM in 'uSM.pas' {SM: TDSServerModule};
+  uSM in 'uSM.pas' {SM: TDSServerModule},
+  ClassPai in '..\Class\ClassPai.pas',
+  ClassPaiCadastro in '..\Class\ClassPaiCadastro.pas',
+  ClassStatus in '..\Class\ClassStatus.pas';
 
 {$R *.res}
 
