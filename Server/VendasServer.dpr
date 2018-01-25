@@ -9,7 +9,8 @@ uses
   uSM in 'uSM.pas' {SM: TDSServerModule},
   ClassPai in '..\Class\ClassPai.pas',
   ClassPaiCadastro in '..\Class\ClassPaiCadastro.pas',
-  ClassStatus in '..\Class\ClassStatus.pas';
+  ClassStatus in '..\Class\ClassStatus.pas',
+  Constantes in '..\Class\Constantes.pas';
 
 {$R *.res}
 
