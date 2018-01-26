@@ -4,7 +4,8 @@ interface
 
 uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, JvExMask, JvToolEdit, JvBaseEdits;
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, JvExMask, JvToolEdit, JvBaseEdits,
+  Vcl.Buttons;
 
 type
   TServidor = class(TForm)
@@ -18,6 +19,8 @@ type
     lblDiretorioBD: TLabel;
     dlgDiretorioBD: TOpenDialog;
     edtDiretorioBD: TJvComboEdit;
+    btnStart: TSpeedButton;
+    btnStop: TSpeedButton;
     procedure edtDiretorioBDButtonClick(Sender: TObject);
   private
     { Private declarations }

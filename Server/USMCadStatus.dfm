@@ -1,0 +1,2 @@
+inherited SMCadStatus: TSMCadStatus
+end

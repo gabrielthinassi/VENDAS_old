@@ -10,12 +10,12 @@ uses System.SysUtils, System.Classes,
 
 type
   TSC = class(TDataModule)
-    DSServer1: TDSServer;
-    DSTCPServerTransport1: TDSTCPServerTransport;
-    DSServerClass1: TDSServerClass;
-    Conexao: TSQLConnection;
-    procedure DSServerClass1GetClass(DSServerClass: TDSServerClass;
+    DSServer: TDSServer;
+    DSTCPServerTransport: TDSTCPServerTransport;
+    DSServerClass: TDSServerClass;
+    procedure DSServerClassGetClass(DSServerClass: TDSServerClass;
       var PersistentClass: TPersistentClass);
+    procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -30,9 +30,17 @@ implementation
 {$R *.dfm}
 
 uses
-  uSM;
+  uSM, URegistraClassesServidoras;
 
-procedure TSC.DSServerClass1GetClass(
+procedure TSC.DataModuleCreate(Sender: TObject);
+begin
+  //Registrando as Classes Exportadas (Deve ser feito antes da Inicialização do Servidor)
+  URegistraClassesServidoras.RegistrarClassesServidoras(Self, DSServer);
+  //Iniciando Servidor
+  DSServer.Start;
+end;
+
+procedure TSC.DSServerClassGetClass(
   DSServerClass: TDSServerClass; var PersistentClass: TPersistentClass);
 begin
   PersistentClass := uSM.TSM;

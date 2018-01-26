@@ -2,8 +2,8 @@ object Servidor: TServidor
   Left = 0
   Top = 0
   Caption = 'Servidor'
-  ClientHeight = 194
-  ClientWidth = 633
+  ClientHeight = 118
+  ClientWidth = 602
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,8 +14,8 @@ object Servidor: TServidor
   PixelsPerInch = 96
   TextHeight = 13
   object lblBDHost: TLabel
-    Left = 66
-    Top = 35
+    Left = 41
+    Top = 8
     Width = 79
     Height = 23
     Caption = 'BDHOST:'
@@ -27,8 +27,8 @@ object Servidor: TServidor
     ParentFont = False
   end
   object lblBDPort: TLabel
-    Left = 68
-    Top = 85
+    Left = 43
+    Top = 37
     Width = 77
     Height = 23
     Caption = 'BDPORT:'
@@ -40,8 +40,8 @@ object Servidor: TServidor
     ParentFont = False
   end
   object lblStatusServidor: TLabel
-    Left = 440
-    Top = 84
+    Left = 275
+    Top = 39
     Width = 156
     Height = 24
     Caption = 'Servidor Iniciado!'
@@ -53,8 +53,8 @@ object Servidor: TServidor
     ParentFont = False
   end
   object lblServerPort: TLabel
-    Left = 300
-    Top = 33
+    Left = 275
+    Top = 9
     Width = 121
     Height = 23
     Caption = 'SERVERPORT:'
@@ -66,8 +66,8 @@ object Servidor: TServidor
     ParentFont = False
   end
   object lblDiretorioBD: TLabel
-    Left = 37
-    Top = 135
+    Left = 12
+    Top = 70
     Width = 108
     Height = 23
     Caption = 'Diretorio BD:'
@@ -78,30 +78,44 @@ object Servidor: TServidor
     Font.Style = []
     ParentFont = False
   end
+  object btnStart: TSpeedButton
+    Left = 512
+    Top = 55
+    Width = 71
+    Height = 26
+    Caption = '&Start'
+  end
+  object btnStop: TSpeedButton
+    Left = 512
+    Top = 84
+    Width = 71
+    Height = 26
+    Caption = '&Stop'
+  end
   object edtHost: TEdit
-    Left = 151
-    Top = 38
+    Left = 126
+    Top = 11
     Width = 120
     Height = 21
     TabOrder = 0
   end
   object edtPort: TEdit
-    Left = 151
-    Top = 86
+    Left = 126
+    Top = 38
     Width = 120
     Height = 21
     TabOrder = 1
   end
   object Edit1: TEdit
-    Left = 427
-    Top = 38
+    Left = 402
+    Top = 12
     Width = 181
     Height = 21
     TabOrder = 2
   end
   object edtDiretorioBD: TJvComboEdit
-    Left = 151
-    Top = 138
+    Left = 126
+    Top = 73
     Width = 270
     Height = 21
     Flat = False
@@ -113,7 +127,7 @@ object Servidor: TServidor
     OnButtonClick = edtDiretorioBDButtonClick
   end
   object dlgDiretorioBD: TOpenDialog
-    Left = 425
-    Top = 135
+    Left = 310
+    Top = 65
   end
 end
