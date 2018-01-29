@@ -5,40 +5,25 @@ interface
 uses
   System.SysUtils, System.Variants, System.Classes,
   Data.DB, Data.SqlExpr, Datasnap.DBClient, Datasnap.Provider, Data.FMTBcd,
-  ClassPaiCadastro, ClassSecaoAtualNovo, UControlaConexao, USMPai, USMConexao, System.StrUtils;
+  ClassPaiCadastro, ClassSecaoAtualNovo, UControlaConexao, USMPai, USMConexao, System.StrUtils,
+  Data.DBXFirebird;
 
 type
   TSMPaiCadastro = class(TSMPai)
     SQLDSCadastro: TSQLDataSet;
     DSPCadastro: TDataSetProvider;
+    Conexao: TSQLConnection;
     procedure DSServerModuleCreate(Sender: TObject);
     procedure DSServerModuleDestroy(Sender: TObject);
 
     procedure DSPCadastroGetTableName(Sender: TObject; DataSet: TDataSet; var TableName: String);
-    procedure DSPCadastroBeforeUpdateRecord(Sender: TObject; SourceDS: TDataSet; DeltaDS: TCustomClientDataSet; UpdateKind: TUpdateKind; var Applied: Boolean);
     procedure DSPCadastroUpdateError(Sender: TObject; DataSet: TCustomClientDataSet; E: EUpdateError; UpdateKind: TUpdateKind; var Response: TResolverResponse);
-    procedure DSPCadastroAfterApplyUpdates(Sender: TObject; var OwnerData: OleVariant);
-    procedure DSPCadastroBeforeApplyUpdates(Sender: TObject; var OwnerData: OleVariant);
 
     procedure SQLDSCadastroAfterOpen(DataSet: TDataSet);
   private
-    FSMConexao: TSMConexao;
-    FSecaoAtual: TClassSecaoNovo;
-    FMeuSQLConnection: TSQLConnection;
 
-    FSuspencoAtribuicaoResponsabilidade: Boolean;
-    FLogCodigo: Int64;
-    FLogOperacao: Integer;
-    FLogTexto: WideString;
-    FCampoSecundario: Int64;
-
-    FCDSFormulasCadastro: TClientDataSet;
-
-    FDataHoraGravacao: TDateTime;
   protected
     FClasseFilha: TFClassPaiCadastro;
-
-    FDataHoraAltComoChave: Boolean;
 
     procedure DSServerModuleCreate_Filho(Sender: TObject); virtual;
     procedure DSServerModuleDestroy_Filho(Sender: TObject); virtual;
@@ -48,11 +33,8 @@ type
     procedure AfterApplyUpdates(var OwnerData: OleVariant); virtual;
 
     procedure ResetCommandTextSQLDSCadastro_Protected; virtual;
-
     procedure AposAbrirSQLDSCadastro(DataSet: TDataSet); virtual;
 
-    procedure RegistraLogTabela(SourceDS: TDataSet; DeltaDS: TCustomClientDataSet; UpdateKind: TUpdateKind); virtual;
-    procedure AtribuiResponsabilidade(SourceDS: TDataSet; var DeltaDS: TCustomClientDataSet; UpdateKind: TUpdateKind; Classe: TFClassPaiCadastro; DataHoraFixa: TDateTime = 0); virtual;
     procedure VerificaSeFoiAlteradoOuExcluidoAntes(Delta: TCustomClientDataSet; Classe: TFClassPaiCadastro); virtual;
 
     procedure ProcessaFormula(Sender: TObject; SourceDS: TDataSet; DeltaDS: TCustomClientDataSet; UpdateKind: TUpdateKind; var Applied: Boolean); virtual;
@@ -61,67 +43,29 @@ type
     procedure CallBack_FechaTela;
     procedure CallBack_Mensagem(S: string);
     procedure CallBack_Incremento(Atual, Total: Integer; S: string = '');
-
-    // - - \\
-
-    property SMConexao: TSMConexao read FSMConexao write FSMConexao;
-    property SecaoAtual: TClassSecaoNovo read FSecaoAtual write FSecaoAtual;
-    property MeuSQLConnection: TSQLConnection read FMeuSQLConnection write FMeuSQLConnection;
   public
-    ///	<summary>
-    ///	  <para>
-    ///	    Método criado para corrigir o problema de quando executa um filtro
-    ///	    no cadastro e retorna muitos registros, ao sair da tela e entrar
-    ///	    novamente, o SQL do CommandText ainda era o mesmo utilizado pela
-    ///	    última vez, fazendo a tela demorar uma eternidade para abrir.
-    ///	  </para>
-    ///	  <para>
-    ///	    Este método reseta o SQL do CommandText, setando o SQL original da
-    ///	    Classe Filha: SQLBaseCadastro.
-    ///	  </para>
-    ///	</summary>
     procedure ResetCommandTextSQLDSCadastro; virtual;
-
-    property SuspencoAtribuicaoResponsabilidade: Boolean read FSuspencoAtribuicaoResponsabilidade write FSuspencoAtribuicaoResponsabilidade;
   end;
 
 implementation
 
-uses Constantes, FuncoesGeraisServidor,
-  ClassHelperDataSet, ClassInterpretadorDeFuncoesGeradorRelatorio, ClassAspecto, ClassFuncoesString;
+uses Constantes, ClassHelperDataSet, ClassPaiCadastro;
 
 {$R *.dfm}
 
 procedure TSMPaiCadastro.DSServerModuleCreate(Sender: TObject);
 var
-  Conexao: TConexao;
   x: Integer;
 begin
   inherited;
-
-  Conexao := ControlaConexao.RetornaConexao;
-
-  if Conexao <> nil then
-  begin
-    FSMConexao := Conexao.SMConexao;
-    FSecaoAtual := Conexao.SecaoAtual;
-    FMeuSQLConnection := Conexao.SMConexao.MeuSQLConnection;
-  end;
-
   DSServerModuleCreate_Filho(Sender);
 
   for x := 0 to ComponentCount - 1 do
     if (Components[x] is TSQLDataSet) then
-      (Components[x] as TSQLDataSet).SQLConnection := MeuSQLConnection;
+      (Components[x] as TSQLDataSet).SQLConnection := Conexao;
 
   // Passado para este local para remover o erro de falta do parametro COD nos cadastros básico.
   ResetCommandTextSQLDSCadastro;
-
-  FCDSFormulasCadastro := TClientDataSet.Create(Self);
-  FCDSFormulasCadastro.Data := SMConexao.FormulasCadastro;
-  FCDSFormulasCadastro.IndexFieldNames := 'TABELA_CTP';
-
-  TClassAspecto.RegistrarObjeto(Self);
 end;
 
 procedure TSMPaiCadastro.DSServerModuleCreate_Filho(Sender: TObject);
@@ -132,15 +76,8 @@ end;
 procedure TSMPaiCadastro.DSServerModuleDestroy(Sender: TObject);
 begin
   DSServerModuleDestroy_Filho(Sender);
-
-  FSMConexao := nil;
-  FSecaoAtual := nil;
-  FMeuSQLConnection := nil;
-
-  FreeAndNil(FCDSFormulasCadastro);
-
-  TClassAspecto.DesRegistrarObjeto(Self);
-
+  //Verificar este FreeAndNil, pode não poder liberar este SQLDS ou tratar de uma outra forma
+  FreeAndNil(SQLDSCadastro);
   inherited;
 end;
 
@@ -149,54 +86,9 @@ begin
   // implementar no filho
 end;
 
-procedure TSMPaiCadastro.DSPCadastroAfterApplyUpdates(Sender: TObject; var OwnerData: OleVariant);
-begin
-  inherited;
-  if ((SecaoAtual.Parametro.RegistraLog_Tabela) or (FClasseFilha.ForcarRegistraLogTabela)) and (FLogTexto <> '') then
-    SMConexao.RegistraLogTabela(VarArrayOf([
-      FLogOperacao,
-      FClasseFilha.TabelaPrincipal,
-      SecaoAtual.Usuario.Nome,
-      FLogCodigo,
-      FLogTexto,
-      FCampoSecundario]));
-
-  AfterApplyUpdates(OwnerData);
-
-  FDataHoraGravacao := 0;
-
-  SMConexao.InformaAtividadeSecao;
-end;
-
-procedure TSMPaiCadastro.DSPCadastroBeforeApplyUpdates(Sender: TObject; var OwnerData: OleVariant);
-begin
-  inherited;
-  FLogCodigo := 0;
-  FCampoSecundario := 0;
-  FLogTexto := '';
-
-  if not FSuspencoAtribuicaoResponsabilidade then
-    FDataHoraGravacao := SMConexao.DataHora;
-
-  BeforeApplyUpdates(OwnerData);
-end;
-
 procedure TSMPaiCadastro.BeforeApplyUpdates(var OwnerData: OleVariant);
 begin
   // será sobrescrito nos filhos
-end;
-
-procedure TSMPaiCadastro.DSPCadastroBeforeUpdateRecord(Sender: TObject; SourceDS: TDataSet; DeltaDS: TCustomClientDataSet; UpdateKind: TUpdateKind; var Applied: Boolean);
-begin
-  if SecaoAtual.SistemaSomenteLeitura then
-    raise Exception.Create(sMensagemSistemaSomenteLeitura);
-
-  ProcessaFormula(Sender, SourceDS, DeltaDS, UpdateKind, Applied);
-
-  if (SourceDS = SQLDSCadastro) and (not FDataHoraAltComoChave) then
-    AtribuiResponsabilidade(SourceDS, DeltaDS, UpdateKind, FClasseFilha);
-
-  RegistraLogTabela(SourceDS, DeltaDS, UpdateKind);
 end;
 
 procedure TSMPaiCadastro.DSPCadastroGetTableName(Sender: TObject; DataSet: TDataSet; var TableName: String);
@@ -222,16 +114,11 @@ procedure TSMPaiCadastro.SQLDSCadastroAfterOpen(DataSet: TDataSet);
 begin
   with FClasseFilha, DataSet do
     begin
-      ConfigurarProviderFlags([CampoEmpresa, CampoChave]);
+      ConfigurarProviderFlags([CampoChave]);
       ConfigurarPropriedadesDosCampos(DataSet);
     end;
 
-  if (FDataHoraAltComoChave) then
-    SQLDSCadastro.FieldByName(FClasseFilha.DataHoraAlt).ProviderFlags := [pfInUpdate, pfInWhere, pfInKey];
-
   AposAbrirSQLDSCadastro(DataSet);
-
-  SMConexao.InformaAtividadeSecao;
 end;
 
 procedure TSMPaiCadastro.AfterApplyUpdates(var OwnerData: OleVariant);
@@ -307,176 +194,6 @@ begin
         FreeAndNil(CDS);
       end;
     end;
-end;
-
-procedure TSMPaiCadastro.RegistraLogTabela(SourceDS: TDataSet; DeltaDS: TCustomClientDataSet; UpdateKind: TUpdateKind);
-var
-  i: Integer;
-  Prefixo, S: string;
-  bModificado: Boolean;
-  FieldCodigo: TField;
-  tpStrPasswordFields: string;
-  DSF: TDataSetField;
-begin
-  if (not((SecaoAtual.Parametro.RegistraLog_Tabela) or (FClasseFilha.ForcarRegistraLogTabela))) or
-    ((SourceDS = SQLDSCadastro) and (UpdateKind = ukInsert)) then // não será necessário registrar log de inclusão
-    Exit;
-
-  //lista de campos de senha
-  tpStrPasswordFields := DeltaDS.GetOptionalParam('PasswordFields');
-
-  FieldCodigo := nil;
-
-  if (SourceDS = SQLDSCadastro) then
-  begin
-    FieldCodigo := DeltaDS.FieldByName(FClasseFilha.CampoChave);
-    if FClasseFilha.CampoRegistroSecundario <> '' then
-      FCampoSecundario := DeltaDS.FieldByName(FClasseFilha.CampoRegistroSecundario).ValorAtual;
-  end else begin
-    DSF := DeltaDS.DataSetField;
-    while Assigned(DSF) do
-    begin
-      FieldCodigo := DSF.DataSet.FindField(FClasseFilha.CampoChave);
-      if FieldCodigo <> nil then
-        Break;
-      if DSF = DeltaDS.DataSetField.DataSet.DataSetField then
-        Exit;
-      DSF := DeltaDS.DataSetField.DataSet.DataSetField;
-    end;
-  end;
-
-  if FieldCodigo = nil then
-    Exit;
-
-  case UpdateKind of
-    ukInsert:
-      begin
-        FLogOperacao := 1;
-        FLogCodigo := FieldCodigo.NewValue;
-      end;
-    ukModify:
-      begin
-        FLogOperacao := 2;
-        FLogCodigo := FieldCodigo.OldValue;
-      end;
-    ukDelete:
-      begin
-        FLogOperacao := 3;
-        FLogCodigo := FieldCodigo.Value;
-      end;
-  end;
-
-  Prefixo := '  ';
-  S := '';
-  bModificado := False;
-
-  if FLogTexto <> '' then
-    FLogTexto := FLogTexto + #10;
-
-  case UpdateKind of
-    ukInsert:
-      begin
-        for i := 0 to DeltaDS.FieldCount - 1 do
-          if (pfinUpdate in DeltaDS.Fields[i].ProviderFlags) and
-            (DeltaDS.Fields[i].DataType <> ftDataSet) and
-            (DeltaDS.Fields[i].FieldName <> FClasseFilha.UsuarioInc) and
-            (DeltaDS.Fields[i].FieldName <> FClasseFilha.DataHoraInc) and
-            (DeltaDS.Fields[i].FieldName <> FClasseFilha.UsuarioAlt) and
-            (DeltaDS.Fields[i].FieldName <> FClasseFilha.DataHoraAlt) then
-          begin
-            bModificado := True;
-            if (DeltaDS.Fields[i].DataType in [ftBlob, ftMemo]) then
-              S := S + Prefixo + DeltaDS.Fields[i].FieldName + ': >> TIPO DE CAMPO NÃO MONITORADO <<' + #10
-            else
-              begin
-                S := S + Prefixo + DeltaDS.Fields[i].FieldName + ': "';
-                if (Pos(DeltaDS.Fields[i].FieldName, tpStrPasswordFields) > 0) then
-                  S := S + '***********'
-                else
-                  S := S + VarToStr(DeltaDS.Fields[i].Value);
-                S := S + '"' + #10;
-              end;
-          end;
-
-        if bModificado then
-        begin
-          FLogTexto := FLogTexto + '=> Inserindo (';
-          if (SourceDS <> SQLDSCadastro) then
-            FLogTexto := FLogTexto + SourceDS.Name + '):' + #10
-          else
-            FLogTexto := FLogTexto + FClasseFilha.Descricao + '):' + #10;
-          FLogTexto := FLogTexto + S;
-        end;
-      end;
-    ukModify:
-      begin
-        for i := 0 to DeltaDS.FieldCount - 1 do
-        begin
-          if (SourceDS <> SQLDSCadastro) and
-            (pfInKey in DeltaDS.Fields[i].ProviderFlags) and
-            (DeltaDS.Fields[i].DataType <> ftDataSet) then
-            S := S + Prefixo + '*' + DeltaDS.Fields[i].FieldName + ' = ' + VarToStr(DeltaDS.Fields[i].OldValue) + #10;
-          if (pfinUpdate in DeltaDS.Fields[i].ProviderFlags) and
-            (DeltaDS.Fields[i].DataType <> ftDataSet) and
-            (not VarIsEmpty(DeltaDS.Fields[i].NewValue)) and
-            (DeltaDS.Fields[i].FieldName <> FClasseFilha.UsuarioInc) and
-            (DeltaDS.Fields[i].FieldName <> FClasseFilha.DataHoraInc) and
-            (DeltaDS.Fields[i].FieldName <> FClasseFilha.UsuarioAlt) and
-            (DeltaDS.Fields[i].FieldName <> FClasseFilha.DataHoraAlt) then
-          begin
-            bModificado := True;
-            if (DeltaDS.Fields[i].DataType in [ftBlob, ftMemo]) then
-              S := S + Prefixo + DeltaDS.Fields[i].FieldName + ': >> TIPO DE CAMPO NÃO MONITORADO <<' + #10
-            else
-              begin
-                S := S + Prefixo + DeltaDS.Fields[i].FieldName + ': "';
-                if (Pos(DeltaDS.Fields[i].FieldName, tpStrPasswordFields) > 0) then
-                  S := S + '***********" para "***********'
-                else
-                  S := S + VarToStr(DeltaDS.Fields[i].OldValue) + '" para "' + VarToStr(DeltaDS.Fields[i].NewValue);
-                S := S + '"' + #10;
-              end;
-          end;
-        end;
-        if bModificado then
-        begin
-          FLogTexto := FLogTexto + '=> Modificado (';
-          if (SourceDS <> SQLDSCadastro) then
-            FLogTexto := FLogTexto + SourceDS.Name + '):' + #10
-          else
-            FLogTexto := FLogTexto + FClasseFilha.Descricao + '):' + #10;
-          FLogTexto := FLogTexto + S;
-        end;
-      end;
-    ukDelete:
-      begin
-        for i := 0 to DeltaDS.FieldCount - 1 do
-          if (pfinUpdate in DeltaDS.Fields[i].ProviderFlags) and
-            (DeltaDS.Fields[i].DataType <> ftDataSet) then
-          begin
-            bModificado := True;
-            if (DeltaDS.Fields[i].DataType in [ftBlob, ftMemo]) then
-              S := S + Prefixo + DeltaDS.Fields[i].FieldName + ': >> TIPO DE CAMPO NÃO MONITORADO <<' + #10
-            else begin
-              S := S + Prefixo + DeltaDS.Fields[i].FieldName + ': "';
-              if (Pos(DeltaDS.Fields[i].FieldName, tpStrPasswordFields) > 0) then
-                S := S + '***********'
-              else
-                S := S + VarToStr(DeltaDS.Fields[i].Value);
-              S := S +  '"' + #10;
-            end;
-          end;
-        if bModificado then
-        begin
-          FLogTexto := FLogTexto + '=> Deletado (';
-          if (SourceDS <> SQLDSCadastro) then
-            FLogTexto := FLogTexto + SourceDS.Name + '):' + #10
-          else
-            FLogTexto := FLogTexto + FClasseFilha.Descricao + '):' + #10;
-          FLogTexto := FLogTexto + S;
-        end;
-      end;
-  end;
 end;
 
 procedure TSMPaiCadastro.ResetCommandTextSQLDSCadastro;

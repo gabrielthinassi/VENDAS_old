@@ -1,7 +1,3 @@
-///	<summary>
-///	  Contém a classe que controla, no servidor de aplicação, o cadastro de
-///	  Status.
-///	</summary>
 unit USMCadStatus;
 
 interface
@@ -9,12 +5,9 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Data.FMTBcd, Data.DB, Data.SqlExpr, Datasnap.Provider,
-  USMPaiCadastro;
+  USMPaiCadastro, Data.DBXFirebird;
 
 type
-  ///	<summary>
-  ///	  Classe que controla, no servidor de aplicação, o cadastro de Status.
-  ///	</summary>
   TSMCadStatus = class(TSMPaiCadastro)
   protected
     procedure DSServerModuleCreate_Filho(Sender: TObject); override;

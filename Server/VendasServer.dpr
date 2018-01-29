@@ -10,7 +10,13 @@ uses
   ClassPai in '..\Class\ClassPai.pas',
   ClassPaiCadastro in '..\Class\ClassPaiCadastro.pas',
   ClassStatus in '..\Class\ClassStatus.pas',
-  Constantes in '..\Class\Constantes.pas';
+  Constantes in '..\Class\Constantes.pas',
+  URegistraClassesServidoras in 'URegistraClassesServidoras.pas',
+  ClassExpositorDeClasses in '..\Class\ClassExpositorDeClasses.pas',
+  USMPai in 'USMPai.pas' {SMPai: TDSServerModule},
+  USMPaiCadastro in 'USMPaiCadastro.pas' {SMPaiCadastro: TDSServerModule},
+  USMCadStatus in 'USMCadStatus.pas' {SMCadStatus: TDSServerModule},
+  ClassHelperDataSet in '..\Class\ClassHelperDataSet.pas';
 
 {$R *.res}
 

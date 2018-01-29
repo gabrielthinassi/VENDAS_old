@@ -3,12 +3,33 @@ unit ClassPaiCadastro;
 interface
 
 uses
-  Classes, DB, SysUtils, DBClient, StrUtils, Variants, FMTBcd, Controls, SqlTimSt,
-  {$IF DEFINED(servidor)} SqlExpr, {$endif}
-  TypInfo, Rtti, ClassPai;
+  Classes,
+  DB,
+  SysUtils,
+  DBClient,
+  StrUtils,
+  Variants,
+  FMTBcd,
+  Controls,
+  SqlTimSt,
+  SqlExpr,
+  TypInfo,
+  Rtti,
+  ClassPai;
+
+//Cria os parametros do DataSet | Ainda não utilizado
+type
+  TParametrosSql = record
+    Nome: string;
+    Tipo: TFieldType;
+    Valor: Variant;
+  end;
+  TListaDeParametrosSql = array of TParametrosSql;
 
 type
   TClassPaiCadastro = class(TClassPai)
+  private
+
   public
     class function Descricao: string; virtual;
     class function TabelaPrincipal: string; virtual;
@@ -29,6 +50,11 @@ type
     class function SQLBaseConsulta: string; virtual;
     class function SQLBaseRelatorio: string; overload; virtual; abstract;
 
+    class function ParametrosSql: TListaDeParametrosSql; static;
+    class procedure CriarParametros(ASQLDataSet: TSQLDataSet);
+    class procedure ConfigurarPropriedadesDoCampo(CDS: TDataSet; Campo: string); overload; virtual;
+    class procedure ConfigurarPropriedadesDosCampos(CDS: TDataSet; CarregarConfigCustomizadas: Boolean = True); virtual;
+
     class function FiltroSql: string; virtual;
   end;
 
@@ -38,7 +64,12 @@ function CriarClassePeloNome(const Nome: string): TClassPaiCadastro;
 
 implementation
 
-uses Constantes; //UDMConexao, UDMPaiCadastro;
+uses Constantes,
+     //UDMConexao,
+     //UDMPaiCadastro,
+     //Validate,
+     ClassHelperDataSet;
+     //GetTexts;
 
 class function TClassPaiCadastro.Descricao: string;
 begin
@@ -62,6 +93,39 @@ begin
   // Nome da classe o qual é relacionada (mestre detalhe), no caso o cliente setando o master.
   // ex: tabela de 'ClassPessoa_Endereco', a classe relacional é a 'ClassPessoa'
   Result := '';
+end;
+
+class procedure TClassPaiCadastro.ConfigurarPropriedadesDoCampo(CDS: TDataSet;
+  Campo: string);
+begin
+  CDS.FieldByName(Campo).Configurar;
+end;
+
+class function TClassPaiCadastro.ParametrosSql: TListaDeParametrosSql;
+begin
+  SetLength(Result, 0);
+end;
+
+class procedure TClassPaiCadastro.CriarParametros(ASQLDataSet: TSQLDataSet);
+var
+  Parametros: TListaDeParametrosSql;
+  i: integer;
+begin
+  Parametros := Self.ParametrosSql;
+  if Length(Parametros) > 0 then
+  begin
+     ASQLDataSet.Params.Clear;
+     for i := Low(Parametros) to High(Parametros) do
+     begin
+       with TParam(ASQLDataSet.Params.Add) do
+       begin
+         Name := Parametros[i].Nome;
+         DataType := Parametros[i].Tipo;
+         ParamType := ptInput;
+         Value := Parametros[i].Valor;
+       end;
+     end;
+  end;
 end;
 
 class function TClassPaiCadastro.CampoEmpresa: string;

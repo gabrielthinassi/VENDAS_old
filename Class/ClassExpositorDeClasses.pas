@@ -34,7 +34,7 @@ type
 
 implementation
 
-constructor TExpositorDeClasses.Create(Dono                     :TComponent;
+constructor TExpositorDeClasses.Create(Owner                    :TComponent;
                                        SevidorDataSnap          :TDSCustomServer;
                                        ClasseASerExposta        :TPersistentClass;
                                        NecessitaExporProviders  :Boolean;
@@ -42,7 +42,7 @@ constructor TExpositorDeClasses.Create(Dono                     :TComponent;
 begin
   inherited
   // Criando um expositor de classes normalmente
-  Create(Dono);
+  Create(Owner);
   // Registrando-o no servidor DataSnap
   Self.Server := SevidorDataSnap;
   // Definindo o tipo de ciclo de vida que a classe exportada terá
