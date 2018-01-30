@@ -37,7 +37,7 @@ begin
   //Registrando as Classes Exportadas (Deve ser feito antes da Inicialização do Servidor)
   URegistraClassesServidoras.RegistrarClassesServidoras(Self, DSServer);
   //Iniciando Servidor
-  DSServer.Start;
+  //DSServer.Start;
 end;
 
 procedure TSC.DSServerClassGetClass(

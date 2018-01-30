@@ -13,7 +13,6 @@ inherited SMPaiCadastro: TSMPaiCadastro
     DataSet = SQLDSCadastro
     Options = [poCascadeDeletes, poCascadeUpdates]
     UpdateMode = upWhereKeyOnly
-    OnUpdateError = DSPCadastroUpdateError
     OnGetTableName = DSPCadastroGetTableName
     Left = 124
     Top = 20
@@ -43,7 +42,7 @@ inherited SMPaiCadastro: TSMPaiCadastro
       'VendorLib=fbclient.dll'
       'VendorLibWin64=fbclient.dll'
       'VendorLibOsx=/Library/Frameworks/Firebird.framework/Firebird'
-      'Database=C:\TRABALHO\VENDAS\Dados\VENDAS.FDB'
+      'Database=127.0.0.1/3054:C:\TRABALHO\VENDAS\Dados\VENDAS.FDB'
       'User_Name=sysdba'
       'Password=masterkey'
       'Role=RoleName'
@@ -59,6 +58,7 @@ inherited SMPaiCadastro: TSMPaiCadastro
       'RoleName=RoleName'
       'ServerCharSet='
       'Trim Char=False')
+    Connected = True
     Left = 80
     Top = 85
   end

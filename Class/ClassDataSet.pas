@@ -1,4 +1,4 @@
-unit ClassHelperDataSet;
+unit ClassDataSet;
 
 interface
 

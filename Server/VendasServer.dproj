@@ -131,7 +131,7 @@
             <FormType>dfm</FormType>
             <DesignClass>TDSServerModule</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Class\ClassHelperDataSet.pas"/>
+        <DCCReference Include="..\Class\ClassDataSet.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

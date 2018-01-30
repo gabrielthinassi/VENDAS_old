@@ -16,7 +16,7 @@ uses
   USMPai in 'USMPai.pas' {SMPai: TDSServerModule},
   USMPaiCadastro in 'USMPaiCadastro.pas' {SMPaiCadastro: TDSServerModule},
   USMCadStatus in 'USMCadStatus.pas' {SMCadStatus: TDSServerModule},
-  ClassHelperDataSet in '..\Class\ClassHelperDataSet.pas';
+  ClassDataSet in '..\Class\ClassDataSet.pas';
 
 {$R *.res}
 

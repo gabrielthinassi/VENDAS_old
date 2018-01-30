@@ -11,17 +11,18 @@ type
   TServidor = class(TForm)
     lblBDHost: TLabel;
     lblBDPort: TLabel;
-    edtHost: TEdit;
-    edtPort: TEdit;
+    edtHostBD: TEdit;
+    edtPortBD: TEdit;
     lblStatusServidor: TLabel;
     lblServerPort: TLabel;
-    Edit1: TEdit;
+    edtServerPort: TEdit;
     lblDiretorioBD: TLabel;
     dlgDiretorioBD: TOpenDialog;
     edtDiretorioBD: TJvComboEdit;
     btnStart: TSpeedButton;
     btnStop: TSpeedButton;
     procedure edtDiretorioBDButtonClick(Sender: TObject);
+    procedure btnStartClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -34,6 +35,14 @@ var
 implementation
 
 {$R *.dfm}
+
+uses uSC, USMPaiCadastro;
+
+procedure TServidor.btnStartClick(Sender: TObject);
+begin
+  SC.DSTCPServerTransport.Port := edtServerPort.Text;
+  //SMPaiCadastro.Conexao.Add
+end;
 
 procedure TServidor.edtDiretorioBDButtonClick(Sender: TObject);
 begin

@@ -9,6 +9,7 @@ object SC: TSC
     Top = 11
   end
   object DSTCPServerTransport: TDSTCPServerTransport
+    Port = 0
     Server = DSServer
     Filters = <>
     Left = 96

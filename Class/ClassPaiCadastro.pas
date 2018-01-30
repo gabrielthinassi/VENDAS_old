@@ -68,7 +68,7 @@ uses Constantes,
      //UDMConexao,
      //UDMPaiCadastro,
      //Validate,
-     ClassHelperDataSet;
+     ClassDataSet;
      //GetTexts;
 
 class function TClassPaiCadastro.Descricao: string;

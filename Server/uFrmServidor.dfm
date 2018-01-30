@@ -84,6 +84,7 @@ object Servidor: TServidor
     Width = 71
     Height = 26
     Caption = '&Start'
+    OnClick = btnStartClick
   end
   object btnStop: TSpeedButton
     Left = 512
@@ -92,21 +93,21 @@ object Servidor: TServidor
     Height = 26
     Caption = '&Stop'
   end
-  object edtHost: TEdit
+  object edtHostBD: TEdit
     Left = 126
     Top = 11
     Width = 120
     Height = 21
     TabOrder = 0
   end
-  object edtPort: TEdit
+  object edtPortBD: TEdit
     Left = 126
     Top = 38
     Width = 120
     Height = 21
     TabOrder = 1
   end
-  object Edit1: TEdit
+  object edtServerPort: TEdit
     Left = 402
     Top = 12
     Width = 181
