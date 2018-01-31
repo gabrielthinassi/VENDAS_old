@@ -12,7 +12,6 @@ uses
   System.Classes,
   Datasnap.DSServer,
   Datasnap.DSNames,
-  ClassExpositorDeClasses,
   DSCommonServer;
 
   procedure RegistrarClassesServidoras(AOwner: TComponent; AServer: TDSServer);
@@ -21,7 +20,7 @@ implementation
 
 uses
   //Lista de Units que Contém os Server Módules ou Outras Classes a serem exportadas;
-  USMCadStatus;
+  USMPai, USMPaiCadastro, USMCadStatus, ClassExpositorDeClasses;
 
 
 
@@ -34,12 +33,6 @@ begin
   TExpositorDeClasses.Create(AOwner, AServer, TSMCadStatus, True, TDSLifeCycle.Session);
 end;
 
-
-
-
-
-end.
-
 {
 O gerenciamento de memória do DataSnap é definido através do componente DSServerClass e sua respectiva propriedade LifeCycle, que pode ser definida como:
 Server     -> O servidor mantém uma única instância da classe no server, todos os clientes ao solicitar essa classe receberão sempre a mesma instância (Singleton)
@@ -47,3 +40,6 @@ Session    -> O servidor mantém uma instância da classe por sessão do DataSnap, 
 Invocation -> A cada execução de um server method uma instância da classe será criada e logo depois destruída (Stateless),
 você pode intervir no processo de criação e destruição desta classe a partir do servidor.
 }
+end.
+
+

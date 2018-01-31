@@ -6,6 +6,8 @@ uses Classes, Windows, SysUtils, Graphics;
 
 const
   // Cores
+  clSucesso = clGreen;
+  clFalha = clRed;
   clAmareloPedido = $00BBFFFF;
   clVlrEntrada = clNavy;
   clVlrSaida = clMaroon;

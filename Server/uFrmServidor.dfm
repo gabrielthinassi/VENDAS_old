@@ -42,9 +42,8 @@ object Servidor: TServidor
   object lblStatusServidor: TLabel
     Left = 275
     Top = 39
-    Width = 156
+    Width = 6
     Height = 24
-    Caption = 'Servidor Iniciado!'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -20
@@ -92,6 +91,7 @@ object Servidor: TServidor
     Width = 71
     Height = 26
     Caption = '&Stop'
+    OnClick = btnStopClick
   end
   object edtHostBD: TEdit
     Left = 126

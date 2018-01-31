@@ -23,6 +23,7 @@ type
     btnStop: TSpeedButton;
     procedure edtDiretorioBDButtonClick(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
+    procedure btnStopClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -36,12 +37,37 @@ implementation
 
 {$R *.dfm}
 
-uses uSC, USMPaiCadastro;
+uses uSC, USMPaiCadastro, Constantes;
 
 procedure TServidor.btnStartClick(Sender: TObject);
 begin
-  SC.DSTCPServerTransport.Port := edtServerPort.Text;
-  //SMPaiCadastro.Conexao.Add
+  SC.DSTCPServerTransport.Port := StrToInt(edtServerPort.Text);
+  //Não estou conseguindo Configurar o SMPaiCadastro.Conexao (ver com o pessoal)
+  SC.DSServer.Start;
+  
+  if SC.DSServer.Started then
+  begin
+    lblStatusServidor.Color := clSucesso;
+    lblStatusServidor.Caption := 'Servidor Iniciado!';
+  end
+  else
+  begin
+    ShowMessage('Houve algum problema ao Iniciar!');
+  end;
+end;
+
+procedure TServidor.btnStopClick(Sender: TObject);
+begin
+  SC.DSServer.Stop;
+  if not SC.DSServer.Started then
+  begin
+    lblStatusServidor.Color := clFalha;
+    lblStatusServidor.Caption := 'Servidor Parado!';
+  end
+  else
+  begin
+    ShowMessage('Houve algum problema ao Parar!');
+  end;
 end;
 
 procedure TServidor.edtDiretorioBDButtonClick(Sender: TObject);

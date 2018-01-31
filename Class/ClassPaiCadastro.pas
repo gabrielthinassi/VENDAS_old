@@ -52,8 +52,6 @@ type
 
     class function ParametrosSql: TListaDeParametrosSql; static;
     class procedure CriarParametros(ASQLDataSet: TSQLDataSet);
-    class procedure ConfigurarPropriedadesDoCampo(CDS: TDataSet; Campo: string); overload; virtual;
-    class procedure ConfigurarPropriedadesDosCampos(CDS: TDataSet; CarregarConfigCustomizadas: Boolean = True); virtual;
 
     class function FiltroSql: string; virtual;
   end;
@@ -93,12 +91,6 @@ begin
   // Nome da classe o qual é relacionada (mestre detalhe), no caso o cliente setando o master.
   // ex: tabela de 'ClassPessoa_Endereco', a classe relacional é a 'ClassPessoa'
   Result := '';
-end;
-
-class procedure TClassPaiCadastro.ConfigurarPropriedadesDoCampo(CDS: TDataSet;
-  Campo: string);
-begin
-  CDS.FieldByName(Campo).Configurar;
 end;
 
 class function TClassPaiCadastro.ParametrosSql: TListaDeParametrosSql;

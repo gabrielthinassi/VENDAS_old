@@ -58,7 +58,6 @@ inherited SMPaiCadastro: TSMPaiCadastro
       'RoleName=RoleName'
       'ServerCharSet='
       'Trim Char=False')
-    Connected = True
     Left = 80
     Top = 85
   end

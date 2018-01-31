@@ -13,8 +13,8 @@ uses
   Data.DBXFirebird,
   Datasnap.DBClient,
   Datasnap.Provider,
-  ClassPaiCadastro,
-  USMPai;
+  USMPai,
+  ClassPaiCadastro;
 
 type
   TSMPaiCadastro = class(TSMPai)
@@ -48,9 +48,8 @@ type
 
 implementation
 
-uses Constantes,
-     ClassDataSet,
-     ClassPaiCadastro;
+uses ClassDataSet,
+     Constantes;
 
 {$R *.dfm}
 
@@ -110,7 +109,7 @@ begin
   with FClasseFilha, DataSet do
     begin
       ConfigurarProviderFlags([CampoChave]);
-      ConfigurarPropriedadesDosCampos(DataSet);
+      //ConfigurarPropriedadesDosCampos(DataSet);
     end;
 
   AposAbrirSQLDSCadastro(DataSet);
