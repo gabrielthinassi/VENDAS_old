@@ -68,9 +68,9 @@ end;
 
 class function TClassStatus.SQLBaseRelatorio: string;
 begin
-  Result := ' select' + #13 +
+  Result := 'select' + #13 +
             CamposCadastro + #13 +
-            ' from STATUS';
+            'from STATUS';
 end;
 
 class procedure TClassStatus.ConfigurarPropriedadesDoCampo(CDS: TDataSet; Campo: string);

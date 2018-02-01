@@ -6,6 +6,9 @@
         <Projects Include="Server\VendasServer.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Client\VendasClient.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="VendasServer:Make">
         <MSBuild Projects="Server\VendasServer.dproj" Targets="Make"/>
     </Target>
+    <Target Name="VendasClient">
+        <MSBuild Projects="Client\VendasClient.dproj"/>
+    </Target>
+    <Target Name="VendasClient:Clean">
+        <MSBuild Projects="Client\VendasClient.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VendasClient:Make">
+        <MSBuild Projects="Client\VendasClient.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="VendasServer"/>
+        <CallTarget Targets="VendasServer;VendasClient"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="VendasServer:Clean"/>
+        <CallTarget Targets="VendasServer:Clean;VendasClient:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="VendasServer:Make"/>
+        <CallTarget Targets="VendasServer:Make;VendasClient:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

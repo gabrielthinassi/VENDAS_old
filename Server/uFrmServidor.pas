@@ -44,10 +44,10 @@ begin
   SC.DSTCPServerTransport.Port := StrToInt(edtServerPort.Text);
   //Não estou conseguindo Configurar o SMPaiCadastro.Conexao (ver com o pessoal)
   SC.DSServer.Start;
-  
+
   if SC.DSServer.Started then
   begin
-    lblStatusServidor.Color := clSucesso;
+    lblStatusServidor.Font.Color := clSucesso;
     lblStatusServidor.Caption := 'Servidor Iniciado!';
   end
   else
@@ -61,7 +61,7 @@ begin
   SC.DSServer.Stop;
   if not SC.DSServer.Started then
   begin
-    lblStatusServidor.Color := clFalha;
+    lblStatusServidor.Font.Color := clFalha;
     lblStatusServidor.Caption := 'Servidor Parado!';
   end
   else
