@@ -21,7 +21,6 @@ type
 
     procedure CDSCadastroBeforeOpen(DataSet: TDataSet);
     procedure CDSCadastroAfterOpen(DataSet: TDataSet);
-    procedure CDSCadastroNewRecord(DataSet: TDataSet);
     procedure CDSCadastroBeforeCancel(DataSet: TDataSet);
     procedure CDSCadastroAfterCancel(DataSet: TDataSet);
     procedure CDSCadastroBeforeEdit(DataSet: TDataSet);
@@ -29,8 +28,6 @@ type
     procedure CDSCadastroAfterPost(DataSet: TDataSet);
     procedure CDSCadastroBeforeDelete(DataSet: TDataSet);
     procedure CDSCadastroAfterDelete(DataSet: TDataSet);
-    procedure CDSCadastroBeforeScroll(DataSet: TDataSet);
-    procedure CDSCadastroAfterScroll(DataSet: TDataSet);
     procedure CDSCadastroBeforeClose(DataSet: TDataSet);
     procedure CDSCadastroReconcileError(DataSet: TCustomClientDataSet; e: EReconcileError; UpdateKind: TUpdateKind; var Action: TReconcileAction);
 
@@ -50,6 +47,8 @@ type
     FClasseNavegacao: TFClassPaiCadastro;
 
     function GetIdDetalhe: integer;
+    procedure AcertarDefaultDinamico(DataSet: TDataSet);
+    function FiltroFixoNavegacao: string;
   protected
     procedure AbreDetalhes; virtual;
     procedure Cancele; virtual;
@@ -74,6 +73,11 @@ type
     function Novo: integer; virtual;
 
     function Aplique(Exclusao: boolean = false): integer; virtual;
+
+    //Funcoes de Proximo Código
+    function ProximoCodigo(Tabela: string): int64;
+    function ProximoCodigoAcrescimo(Tabela: string; Acrescimo: Integer = 1): int64;
+
 
     procedure AtribuiAutoIncDetalhe(DataSet: TDataSet; Classe: TFClassPaiCadastro; CampoChaveEstrangeira: String);
 
@@ -105,8 +109,6 @@ begin
 
   DSPCCadastro.SQLConnection := ConexaoDS;
 
-  FPrincipal.AdicionaLinhaRich(FClasseFilha.SQLBaseCadastro);
-
   if DSPCCadastro.ServerClassName <> '' then
     CDSCadastro.RemoteServer := DSPCCadastro;
   CDSCadastro.ProviderName := 'DSPCadastro';
@@ -119,26 +121,12 @@ begin
     //  CDSCadastro.CommandText := SQLBaseCadastro;
 
     CDSCadastro.AdicionarCampos;
-    ConfigurarPropriedadesDosCampos(CDSCadastro);
-    DMConexao.AtribuirOutrosDefault(CDSCadastro, TabelaPrincipal);
   end;
-
-  ConfiguraPermissoes;
-
-  // Tags de controles diversos
-  ValidarDetalheDuplicado := True;
-  Excluindo := false;
-  Gravando := false;
-  FImportandoRegistros := false;
-  FReplicandoRegistros := False;
-  GerouNovoCodigo := false;
-  EdicaoAposErro := false;
 end;
 
 procedure TDMPaiCadastro.DataModuleDestroy(Sender: TObject);
 begin
   inherited;
-
   DSPCCadastro.Close;
   DSPCCadastro.SQLConnection := nil;
 end;
@@ -330,9 +318,6 @@ begin
       FieldByName(CampoChave).AsInteger := FCodigoAtual;
       GerouNovoCodigo := True;
     end;
-  // Atribuição de resposabilidade aqui é só para alterar o registro,
-  // ela será realizada pelo servidor de aplicação.
-  AtribuiResponsabilidade(CDSCadastro, FClasseFilha);
 end;
 
 procedure TDMPaiCadastro.AfterPost(DataSet: TDataSet);
@@ -519,6 +504,22 @@ begin
 end;
 
 
+function TDMPaiCadastro.ProximoCodigo(Tabela: string): int64;
+begin
+  //Busca o Próximo Código no Servidor de Aplicação
+  Tabela := AnsiUpperCase(Tabela);
+  Result := ExecuteMethods('TSMConexao.ProximoCodigo', [Tabela]);
+end;
+
+function TDMPaiCadastro.ProximoCodigoAcrescimo(Tabela: string;
+  Acrescimo: Integer): int64;
+begin
+  //Busca o Próximo Código no Servidor de Aplicação
+  //Já incrementado de acordo com o parametro Acrescimo
+  Tabela := AnsiUpperCase(Tabela);
+  Result := ExecuteMethods('TSMConexao.ProximoCodigoAcrescimo', [Tabela, Acrescimo]);
+end;
+
 function TDMPaiCadastro.Anterior(Atual: integer): integer;
 var
   s: string;
@@ -681,29 +682,18 @@ begin
 end;
 
 function TDMPaiCadastro.Novo: integer;
-var
-  Quebra: integer;
 begin
   // Retorna o novo código a ser usado na inserção
   with FClasseFilha do
   begin
-    if (ConstanteSistema.Sistema in [ConstanteSistema.cSistemaDepPessoal, ConstanteSistema.cSistemaContabilidade]) then
-      Quebra := IfThen(CampoEmpresa = '', 0, DMConexao.SecaoAtual.Empresa.Estabelecimento)
-    else
-    begin
-      // Quebra := IfThen(CampoEmpresa = '', 0, DMConexao.SecaoAtual.Empresa.Codigo);
-      // não estamos utilizando chave composta
-      Quebra := 0;
-    end;
-
-    Result := DMConexao.ProximoCodigo(TabelaPrincipal, Quebra);
+    Result := DMConexao.ProximoCodigo(TabelaPrincipal);
 
     if Result < ValorInicialCampoChave then
       Result := DMConexao.ProximoCodigoAcrescimo(TabelaPrincipal, Quebra, (ValorInicialCampoChave - Result));
 
     if (ValorFinalCampoChave > 0) and (Result > ValorFinalCampoChave) then
     begin
-      TCaixasDeDialogo.Aviso('Limite de código superado para o cadastro ' + Descricao + '!');
+      ShowMessage('Limite de código superado para o cadastro ' + Descricao + '!');
       Abort;
     end;
   end;

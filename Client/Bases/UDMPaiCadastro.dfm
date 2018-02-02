@@ -20,9 +20,6 @@ inherited DMPaiCadastro: TDMPaiCadastro
     AfterCancel = CDSCadastroAfterCancel
     BeforeDelete = CDSCadastroBeforeDelete
     AfterDelete = CDSCadastroAfterDelete
-    BeforeScroll = CDSCadastroBeforeScroll
-    AfterScroll = CDSCadastroAfterScroll
-    OnNewRecord = CDSCadastroNewRecord
     OnReconcileError = CDSCadastroReconcileError
     Left = 48
     Top = 53

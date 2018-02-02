@@ -2,6 +2,7 @@ inherited SMPaiCadastro: TSMPaiCadastro
   OldCreateOrder = True
   OnCreate = DSServerModuleCreate
   OnDestroy = DSServerModuleDestroy
+  Width = 424
   object SQLDSCadastro: TSQLDataSet
     AfterOpen = SQLDSCadastroAfterOpen
     MaxBlobSize = -1
@@ -60,5 +61,40 @@ inherited SMPaiCadastro: TSMPaiCadastro
       'Trim Char=False')
     Left = 80
     Top = 85
+  end
+  object SQLDSProximoCodigo: TSQLDataSet
+    CommandText = 
+      'select '#13#10'AUTOINCREMENTOS.TABELA_AUTOINC,'#13#10'AUTOINCREMENTOS.CODIGO' +
+      '_AUTOINC'#13#10'from AUTOINCREMENTOS'#13#10'where AUTOINCREMENTOS.TABELA_AUT' +
+      'OINC = :TABELA'
+    MaxBlobSize = -1
+    Params = <>
+    Left = 227
+    Top = 8
+  end
+  object DSPProximoCodigo: TDataSetProvider
+    DataSet = SQLDSProximoCodigo
+    Constraints = False
+    Exported = False
+    Options = []
+    Left = 228
+    Top = 53
+  end
+  object CDSProximoCodigo: TClientDataSet
+    Aggregates = <>
+    Params = <
+      item
+        DataType = ftString
+        Name = 'TABELA'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftInteger
+        Name = 'QUEBRA'
+        ParamType = ptInput
+      end>
+    ProviderName = 'DSPProximoCodigo'
+    Left = 227
+    Top = 97
   end
 end
