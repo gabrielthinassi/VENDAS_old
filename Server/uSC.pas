@@ -30,7 +30,7 @@ implementation
 {$R *.dfm}
 
 uses
-  uSM, URegistraClassesServidoras;
+  USMConexao, URegistraClassesServidoras;
 
 procedure TSC.DataModuleCreate(Sender: TObject);
 begin
@@ -43,7 +43,7 @@ end;
 procedure TSC.DSServerClassGetClass(
   DSServerClass: TDSServerClass; var PersistentClass: TPersistentClass);
 begin
-  PersistentClass := uSM.TSM;
+  PersistentClass := USMConexao.TSMConexao;
 end;
 
 end.

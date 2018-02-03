@@ -28,7 +28,8 @@ begin
 end;
 }
 
-
+// CTRL + F7
+// Permite visualizar o retorno de uma Função em Debug Mode;
 
 
 end.

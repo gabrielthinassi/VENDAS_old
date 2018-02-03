@@ -11,6 +11,8 @@ object Servidor: TServidor
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object lblBDHost: TLabel
@@ -79,7 +81,7 @@ object Servidor: TServidor
   end
   object btnStart: TSpeedButton
     Left = 512
-    Top = 55
+    Top = 57
     Width = 71
     Height = 26
     Caption = '&Start'
@@ -95,17 +97,19 @@ object Servidor: TServidor
   end
   object edtHostBD: TEdit
     Left = 126
-    Top = 11
+    Top = 10
     Width = 120
     Height = 21
     TabOrder = 0
+    Text = '127.0.0.1'
   end
   object edtPortBD: TEdit
     Left = 126
-    Top = 38
+    Top = 37
     Width = 120
     Height = 21
     TabOrder = 1
+    Text = '3054'
   end
   object edtServerPort: TEdit
     Left = 402
@@ -113,6 +117,7 @@ object Servidor: TServidor
     Width = 181
     Height = 21
     TabOrder = 2
+    Text = '200'
   end
   object edtDiretorioBD: TJvComboEdit
     Left = 126
@@ -124,7 +129,7 @@ object Servidor: TServidor
     ButtonWidth = 34
     ImageKind = ikEllipsis
     TabOrder = 3
-    Text = ''
+    Text = 'C:\TRABALHO\VENDAS\Dados\VENDAS.FDB'
     OnButtonClick = edtDiretorioBDButtonClick
   end
   object dlgDiretorioBD: TOpenDialog

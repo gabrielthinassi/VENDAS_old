@@ -24,6 +24,8 @@ type
     procedure edtDiretorioBDButtonClick(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
     procedure btnStopClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -37,13 +39,21 @@ implementation
 
 {$R *.dfm}
 
-uses uSC, USMPaiCadastro, Constantes;
+uses uSC, USMPaiCadastro, Constantes, USMConexao;
 
 procedure TServidor.btnStartClick(Sender: TObject);
+var
+  I: Integer;
 begin
   SC.DSTCPServerTransport.Port := StrToInt(edtServerPort.Text);
-  //Não estou conseguindo Configurar o SMPaiCadastro.Conexao (ver com o pessoal)
+
+  with SMConexao.Conexao do
+  begin
+        Params[Params.IndexOfName('Database')] := Concat('Database=', edtHostBD.Text, '/', edtPortBD.Text, ':', edtDiretorioBD.Text);
+  end;
+
   SC.DSServer.Start;
+  SMConexao.Conexao.Connected := True;
 
   if SC.DSServer.Started then
   begin
@@ -76,6 +86,16 @@ begin
   if dlgDiretorioBD.FileName = '' then
     Application.MessageBox('Selecione um Arquivo!','Atenção!',MB_OK);
   edtDiretorioBD.Text := dlgDiretorioBD.FileName;
+end;
+
+procedure TServidor.FormCreate(Sender: TObject);
+begin
+  SMConexao := TSMConexao.Create(Self);
+end;
+
+procedure TServidor.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(SMConexao);
 end;
 
 end.

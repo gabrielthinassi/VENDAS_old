@@ -14,19 +14,12 @@ uses
   Datasnap.DBClient,
   Datasnap.Provider,
   USMPai,
-  ClassPaiCadastro,
-  Data.DB,
-  Data.SqlExpr,
-  DBXCommon;
+  ClassPaiCadastro;
 
 type
   TSMPaiCadastro = class(TSMPai)
     SQLDSCadastro: TSQLDataSet;
     DSPCadastro: TDataSetProvider;
-    Conexao: TSQLConnection;
-    SQLDSProximoCodigo: TSQLDataSet;
-    DSPProximoCodigo: TDataSetProvider;
-    CDSProximoCodigo: TClientDataSet;
     procedure DSServerModuleCreate(Sender: TObject);
     procedure DSServerModuleDestroy(Sender: TObject);
 
@@ -50,21 +43,13 @@ type
 
   public
     procedure ResetCommandTextSQLDSCadastro; virtual;
-
-    //Funções Gerais de Execução
-    function ExecuteScalar(SQL: string; CriarTransacao: Boolean): OleVariant; virtual;
-    function ExecuteReader(SQL: string; CriarTransacao: Boolean): OleVariant; virtual;
-    function ExecuteCommand(SQL: string; CriarTransacao: Boolean): OleVariant; virtual;
-    function ExecuteCommand_Update(SQL, Campo: string; Valor: OleVariant; CriarTransacao: Boolean): OleVariant; virtual;
-    function ProximoCodigo(Tabela: String; Acrescimo: Integer): Int64; virtual;
-    procedure AcertaProximoCodigo(NomeDaClasse: String; CriarTransacao: Boolean = True); virtual;
-
   end;
 
 implementation
 
 uses ClassDataSet,
-     Constantes;
+     Constantes,
+     USMConexao;
 
 {$R *.dfm}
 
@@ -77,7 +62,7 @@ begin
 
   for x := 0 to ComponentCount - 1 do
     if (Components[x] is TSQLDataSet) then
-      (Components[x] as TSQLDataSet).SQLConnection := Conexao;
+      (Components[x] as TSQLDataSet).SQLConnection := TSMConexao(SMConexao).Conexao;
 
   // Passado para este local para remover o erro de falta do parametro COD nos cadastros básico.
   ResetCommandTextSQLDSCadastro;
@@ -101,30 +86,6 @@ begin
   // implementar no filho
 end;
 
-function TSMPaiCadastro.ExecuteCommand(SQL: string;
-  CriarTransacao: Boolean): OleVariant;
-begin
-
-end;
-
-function TSMPaiCadastro.ExecuteCommand_Update(SQL, Campo: string;
-  Valor: OleVariant; CriarTransacao: Boolean): OleVariant;
-begin
-
-end;
-
-function TSMPaiCadastro.ExecuteReader(SQL: string;
-  CriarTransacao: Boolean): OleVariant;
-begin
-
-end;
-
-function TSMPaiCadastro.ExecuteScalar(SQL: string;
-  CriarTransacao: Boolean): OleVariant;
-begin
-
-end;
-
 procedure TSMPaiCadastro.BeforeApplyUpdates(var OwnerData: OleVariant);
 begin
   // será sobrescrito nos filhos
@@ -143,59 +104,6 @@ begin
   // será sobrescrito nos filhos
 end;
 
-function TSMPaiCadastro.ProximoCodigo(Tabela: String;
-  Acrescimo: Integer): Int64;
-var
-  TD: TDBXTransaction;
-begin
-  if (CDSProximoCodigo.FieldDefs.Count = 0) then
-  begin
-    CDSProximoCodigo.Close;
-    CDSProximoCodigo.FieldDefs.Clear;
-    CDSProximoCodigo.FieldDefs.Add('TABELA_AUTOINC', ftString, 31);
-    CDSProximoCodigo.FieldDefs.Add('CODIGO_AUTOINC', ftLargeint);
-    CDSProximoCodigo.CreateDataSet;
-  end;
-
-  with Conexao do
-  begin
-    TD := BeginTransaction(TDBXIsolations.ReadCommitted);
-    try
-      with CDSProximoCodigo do
-      begin
-        repeat
-          Close;
-          Params.ParamByName('TABELA').AsString  := Tabela;
-          Open;
-          if IsEmpty then
-          begin
-            Insert;
-            FieldByName('TABELA_AUTOINC').AsString  := Tabela;
-            FieldByName('CODIGO_AUTOINC').Value     := Acrescimo;
-          end
-          else
-          begin
-            Edit;
-            FieldByName('CODIGO_AUTOINC').AsFloat := FieldByName('CODIGO_AUTOINC').AsFloat + Acrescimo;
-          end;
-          Post;
-        until (ApplyUpdates(0) = 0);
-        Result := FieldByName('CODIGO_AUTOINC').AsLargeInt;
-        Close;
-      end;
-
-      if HasTransaction(TD) then
-        CommitFreeAndNil(TD);
-    except
-      on E: Exception do
-      begin
-        if HasTransaction(TD) then
-          RollbackFreeAndNil(TD);
-        raise Exception.Create(FuncoesGeraisServidor.FormataErroNoServidor(Self.ClassName, 'ProximoCodigo', 'Tabela: ' + Tabela + #13 + E.Message));
-      end;
-    end;
-  end;
-end;
 
 procedure TSMPaiCadastro.SQLDSCadastroAfterOpen(DataSet: TDataSet);
 begin
@@ -206,12 +114,6 @@ begin
     end;
 
   AposAbrirSQLDSCadastro(DataSet);
-end;
-
-procedure TSMPaiCadastro.AcertaProximoCodigo(NomeDaClasse: String;
-  CriarTransacao: Boolean);
-begin
-
 end;
 
 procedure TSMPaiCadastro.AfterApplyUpdates(var OwnerData: OleVariant);
