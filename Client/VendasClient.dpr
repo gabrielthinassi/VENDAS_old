@@ -14,8 +14,7 @@ uses
   ClassPaiCadastro in '..\Class\ClassPaiCadastro.pas',
   ClassStatus in '..\Class\ClassStatus.pas',
   Constantes in '..\Class\Constantes.pas',
-  UDMConexao in 'Bases\UDMConexao.pas' {DMConexao: TDataModule},
-  USMConexao in 'Bases\USMConexao.pas' {SMConexao: TDSServerModule};
+  UDMConexao in 'Bases\UDMConexao.pas' {DMConexao: TDataModule};
 
 {$R *.res}
 

@@ -18,6 +18,10 @@ uses
   USMCadStatus in 'USMCadStatus.pas' {SMCadStatus: TDSServerModule},
   ClassDataSet in '..\Class\ClassDataSet.pas',
   Duvidas in '..\Duvidas.pas',
+<<<<<<< HEAD
+=======
+  USMConexao in 'USMConexao.pas' {SMConexao: TDSServerModule},
+>>>>>>> b3f3f996bcb22b005d97f34b8589dcd32d6f1937
   Exemploes in '..\Exemploes.pas';
 
 {$R *.res}

@@ -78,6 +78,8 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
@@ -133,6 +135,14 @@
         </DCCReference>
         <DCCReference Include="..\Class\ClassDataSet.pas"/>
         <DCCReference Include="..\Duvidas.pas"/>
+<<<<<<< HEAD
+=======
+        <DCCReference Include="USMConexao.pas">
+            <Form>SMConexao</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDSServerModule</DesignClass>
+        </DCCReference>
+>>>>>>> b3f3f996bcb22b005d97f34b8589dcd32d6f1937
         <DCCReference Include="..\Exemploes.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
@@ -154,6 +164,11 @@
                 <Source>
                     <Source Name="MainSource">VendasServer.dpr</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclIntraweb_140_240.bpl">File c:\program files (x86)\embarcadero\studio\18.0\bin\dclIntraweb_140_240.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k240.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp240.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
                 <DeployFile LocalName="Win32\Debug\VendasServer.exe" Configuration="Debug" Class="ProjectOutput">
